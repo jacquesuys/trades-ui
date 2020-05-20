@@ -4,8 +4,22 @@
     <v-form ref="outgoingForm" v-model="formValidity">
       <v-container>
         <v-row>
-          <span class="form-type-pre-label">Outgoing</span>
-          <v-switch v-model="isIncomingForm" :label="`Incoming`"></v-switch>
+          <v-col cols="12" md="6">
+            <header>Direction</header>
+            <v-radio-group v-model="direction" row>
+              <v-radio :key="`outgoing`" :label="`Outgoing`" :value="`outgoing`"></v-radio>
+              <v-radio :key="`incoming`" :label="`Incoming`" :value="`incoming`"></v-radio>
+            </v-radio-group>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-select
+              v-model="applicant"
+              :items="applicantList"
+              label="Applicant"
+              height="42"
+              outlined
+            ></v-select>
+          </v-col>
         </v-row>
         <v-row>
           <v-col cols="12" md="6">
@@ -17,6 +31,7 @@
               label="Beneficary Names"
               :rules="beneficiaryRules"
               required
+              outlined
             ></v-select>
           </v-col>
           <v-col cols="12" md="6">
@@ -27,6 +42,8 @@
               label="Facility"
               height="42"
               required
+              outlined
+              :disabled="direction === 'incoming'"
             ></v-select>
           </v-col>
         </v-row>
@@ -38,6 +55,7 @@
               :rules="lcRefNumberRules"
               height="42"
               required
+              outlined
             ></v-text-field>
           </v-col>
           <v-col col="12" md="6">
@@ -48,6 +66,7 @@
               label="LC Type"
               height="42"
               required
+              outlined
             ></v-select>
           </v-col>
         </v-row>
@@ -57,9 +76,11 @@
               v-model="tranche"
               :rules="trancheRules"
               :items="trancheList"
+              :disabled="direction === 'incoming'"
               label="Tranche"
               height="42"
               required
+              outlined
             ></v-select>
           </v-col>
           <v-col col="12" md="6">
@@ -67,9 +88,10 @@
               v-model="issuingBank"
               :items="issuingBankList"
               :rules="issuingBankRules"
-              label="Issuing Bank"
+              label="Issuing Bank Name"
               height="42"
               required
+              outlined
             ></v-select>
           </v-col>
         </v-row>
@@ -91,6 +113,7 @@
                   label="Issuance Date"
                   prepend-icon="event"
                   readonly
+                  outlined
                   v-on="on"
                 ></v-text-field>
               </template>
@@ -125,6 +148,7 @@
                   :rules="expiryDateRules"
                   prepend-icon="event"
                   readonly
+                  outlined
                   v-on="on"
                 ></v-text-field>
               </template>
@@ -144,7 +168,77 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col>
+          <v-col col="12" md="6">
+            <v-select
+              v-model="currency"
+              :items="currencyList"
+              label="Currency"
+              height="42"
+              outlined
+            ></v-select>
+          </v-col>
+          <v-col col="12" md="6">
+            <v-text-field outlined label="Face Value"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col col="12" md="6">
+            <v-text-field outlined label="Tolerance"></v-text-field>
+          </v-col>
+          <v-col col="12" md="6">
+            <v-text-field
+              outlined
+              label="New Issuance Fee"
+              hint="If different from default"
+              :disabled="direction === 'incoming'"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col col="12" md="6">
+            <v-text-field
+              outlined
+              label="Autocancellation threshold"
+              hint="Enter a threshold for cancellation, if applicable."
+            ></v-text-field>
+          </v-col>
+          <v-col col="12" md="6">
+            <v-text-field
+              outlined
+              label="Trade reference number"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <header>Is the advising bank confirming?</header>
+            <v-radio-group v-model="isAdvisingBankConfirming" row>
+              <v-radio :key="`no`" :label="`No`" :value="`no`"></v-radio>
+              <v-radio :key="`yes`" :label="`Yes`" :value="`yes`"></v-radio>
+            </v-radio-group>
+          </v-col>
+          <v-col col="12" md="6">
+            <v-select
+              v-model="advisingBank"
+              :items="advisingBankList"
+              label="Advising Bank Name"
+              height="42"
+              outlined
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col col="12" md="6">
+            <v-textarea
+              outlined
+              name="input-7-1"
+              label="LC description"
+            ></v-textarea>
+          </v-col>
+        </v-row>
+        <hr>
+        <v-row>
+          <v-col cols="12" center>
             <v-btn
               @click="submitForm"
               color="primary"
@@ -167,6 +261,8 @@ export default {
   data: () => ({
     id: "",
     isIncomingForm: false,
+    currency: [],
+    currencyList: ["USD", "GBP", "JPY"],
 
     beneficiaryNames: [],
     beneficiaryList: ["John Doe", "Alan Smith", "Michael Scott"],
@@ -195,9 +291,18 @@ export default {
     issuanceDate: new Date().toISOString().substr(0, 10),
     issuanceDateRules: [v => v.length > 0 || "Choose an expiration date"],
 
+    advisingBank: "",
+    advisingBankList: ["Bank 1", "Bank 2", "Bank 3"],
+
+    applicant: "",
+    applicantList: ["Applicant 1", "Applicant 2", "Applicant 3"],
+
     expiryDatePicker: false,
     expiryDate: "",
     expiryDateRules: [v => v.length > 0 || "Choose an expiration date"],
+
+    isAdvisingBankConfirming: "",
+    direction: "",
 
     formValidity: false
   }),
@@ -227,7 +332,7 @@ export default {
         issuanceDate,
         expiryDate,
         id,
-        meta: {
+        timestamps: {
           firstCreated,
           lastUpdated: new Date().toISOString().substr(0, 10)
         }
@@ -244,15 +349,15 @@ export default {
         redirect: "follow", // manual, *follow, error
         referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: JSON.stringify(data) // body data type must match "Content-Type" header
-      })
+      });
     },
     submitForm() {
-      this.postForm('forms')
+      this.postForm("forms")
         .then(() => this.resetForm())
-        .catch(() => console.log('error'));
+        .catch(() => console.log("error"));
     },
     saveForm() {
-      this.postForm('drafts')
+      this.postForm("drafts");
     },
     init() {
       this.firstCreated = new Date().toISOString().substr(0, 10);
@@ -261,10 +366,21 @@ export default {
     resetForm() {
       this.$refs.outgoingForm.reset();
       this.init();
-    },
+    }
   },
   created() {
-    this.init();
+    console.log("component", this.$store.state.draft);
+    this.id = this.$store.state.draft.id;
+    this.beneficiaryNames = this.$store.state.draft.beneficiaryNames;
+    this.facility = this.$store.state.draft.facility;
+    this.expiryDate = this.$store.state.draft.expiryDate;
+    this.isIncomingForm = this.$store.state.draft.isIncomingForm;
+    this.lcRefNumber = this.$store.state.draft.lcRefNumber;
+    this.lcType = this.$store.state.draft.lcType;
+    this.timestamps = this.$store.state.draft.timestamps;
+    this.tranche = this.$store.state.draft.tranche;
+    this.issuingBank = this.$store.state.draft.issuingBank;
+    this.issuingDate = this.$store.state.draft.issuingDate;
   }
 };
 </script>

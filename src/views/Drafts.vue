@@ -2,8 +2,10 @@
   <div>
     Drafts
     <ul v-if="!err">
-      <li v-for="draft in drafts" :key="draft.id">
-        <div @click="loadDraft(draft)">{{ draft.id }}</div>
+      <li v-for="draft in drafts" :key="draft.id" @click="loadDraft(draft)">
+        <div>{{ draft.id }}</div>
+        <div>{{ draft.timestamps.firstCreated }}</div>
+        <div>{{ draft.timestamps.lastUpdated }}</div>
       </li>
     </ul>
     <v-alert v-if="err" type="error">
@@ -33,3 +35,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+li {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+</style>
