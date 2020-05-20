@@ -1,0 +1,209 @@
+{
+  "drafts": [
+    {
+      "isIncomingForm": true,
+      "beneficiaryNames": [
+        "Alan Smith",
+        "John Doe"
+      ],
+      "facility": "Facility 3",
+      "lcRefNumber": "xcxzfdszf",
+      "lcType": "LC 2",
+      "tranche": "Tranche 1",
+      "issuingBank": "Bank 2",
+      "issuanceDate": "2020-05-19",
+      "expiryDate": "2020-05-29",
+      "meta": {
+        "id": 3727305,
+        "firstCreated": "2020-05-19",
+        "lastUpdated": "2020-05-19"
+      },
+      "id": 9772168
+    },
+    {
+      "isIncomingForm": false,
+      "beneficiaryNames": [
+        "John Doe",
+        "Michael Scott"
+      ],
+      "facility": "",
+      "lcRefNumber": "",
+      "lcType": "",
+      "tranche": "",
+      "issuingBank": "",
+      "issuanceDate": "2020-05-20",
+      "expiryDate": "",
+      "id": 652236,
+      "meta": {
+        "firstCreated": "2020-05-20",
+        "lastUpdated": "2020-05-20"
+      }
+    },
+    {
+      "isIncomingForm": false,
+      "beneficiaryNames": [
+        "John Doe"
+      ],
+      "facility": "",
+      "lcRefNumber": "",
+      "lcType": "",
+      "tranche": "",
+      "issuingBank": "",
+      "issuanceDate": "2020-05-20",
+      "expiryDate": "",
+      "id": 8800181,
+      "meta": {
+        "firstCreated": "2020-05-20",
+        "lastUpdated": "2020-05-20"
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": 3695278,
+      "facility": "Facility 2"
+    },
+    {
+      "id": 896711,
+      "facility": "Facility 2"
+    },
+    {
+      "id": 5928101,
+      "facility": "Facility 2",
+      "firstCreated": "2020-05-19T16:05:43.038Z",
+      "lastUpdated": "2020-05-19T16:06:17.659Z"
+    },
+    {
+      "id": 158437,
+      "firstCreated": "2020-05-19T16:08:30.727Z",
+      "lastUpdated": "2020-05-19T16:08:32.922Z"
+    },
+    {
+      "id": 8461508,
+      "facility": "Facility 2",
+      "firstCreated": "2020-05-19T16:11:06.053Z",
+      "lastUpdated": "2020-05-19T16:11:10.989Z"
+    },
+    {
+      "id": 6128777,
+      "facility": "Facility 2",
+      "firstCreated": "2020-05-19T17:00:07.423Z",
+      "lastUpdated": "2020-05-19T17:00:15.621Z",
+      "isIncomingForm": false
+    },
+    {
+      "id": 8893740,
+      "firstCreated": "2020-05-19",
+      "lastUpdated": "2020-05-19",
+      "isIncomingForm": false
+    },
+    {
+      "id": 867135,
+      "facility": "Facility 2",
+      "firstCreated": "2020-05-19",
+      "lastUpdated": "2020-05-19",
+      "isIncomingForm": false
+    },
+    {
+      "id": 9772167,
+      "facility": "Facility 1",
+      "firstCreated": "2020-05-19",
+      "lastUpdated": "2020-05-19",
+      "isIncomingForm": false
+    },
+    {
+      "id": 5143696,
+      "isIncomingForm": false,
+      "beneficiaryNames": [
+        "Alan Smith"
+      ],
+      "facility": "Facility 2",
+      "lcRefNumber": "dsadsadas",
+      "lcType": "LC 2",
+      "tranche": "Tranche 2",
+      "issuingBank": "Bank 2",
+      "issuanceDate": "2020-05-19",
+      "expiryDate": "2020-05-22",
+      "firstCreated": "2020-05-19",
+      "lastUpdated": "2020-05-19"
+    },
+    {
+      "isIncomingForm": true,
+      "beneficiaryNames": [
+        "Alan Smith",
+        "John Doe"
+      ],
+      "facility": "Facility 3",
+      "lcRefNumber": "xcxzfdszf",
+      "lcType": "LC 2",
+      "tranche": "Tranche 1",
+      "issuingBank": "Bank 2",
+      "issuanceDate": "2020-05-19",
+      "expiryDate": "2020-05-29",
+      "meta": {
+        "id": 3727305,
+        "firstCreated": "2020-05-19",
+        "lastUpdated": "2020-05-19"
+      },
+      "id": 9772168
+    },
+    {
+      "isIncomingForm": false,
+      "beneficiaryNames": [
+        "John Doe"
+      ],
+      "facility": "Facility 1",
+      "lcRefNumber": "assdadads",
+      "lcType": "LC 1",
+      "tranche": "Tranche 1",
+      "issuingBank": "Bank 2",
+      "issuanceDate": "2020-05-20",
+      "expiryDate": "2020-05-20",
+      "meta": {
+        "id": 5490715,
+        "firstCreated": "2020-05-20",
+        "lastUpdated": "2020-05-20"
+      },
+      "id": 9772169
+    },
+    {
+      "isIncomingForm": true,
+      "beneficiaryNames": [
+        "Alan Smith",
+        "John Doe"
+      ],
+      "facility": "Facility 1",
+      "lcRefNumber": "dsaadsdsa",
+      "lcType": "LC 1",
+      "tranche": "Tranche 2",
+      "issuingBank": "Bank 2",
+      "issuanceDate": "2020-05-20",
+      "expiryDate": "2020-05-20",
+      "meta": {
+        "id": 2024606,
+        "firstCreated": "2020-05-20",
+        "lastUpdated": "2020-05-20"
+      },
+      "id": 9772170
+    },
+    {
+      "isIncomingForm": true,
+      "beneficiaryNames": [
+        "John Doe",
+        "Michael Scott"
+      ],
+      "facility": "Facility 2",
+      "lcRefNumber": "sdadsad",
+      "lcType": "LC 1",
+      "tranche": "Tranche 1",
+      "issuingBank": "Bank 2",
+      "issuanceDate": "2020-05-15",
+      "expiryDate": "2020-05-30",
+      "id": 2924425,
+      "meta": {
+        "firstCreated": "2020-05-20",
+        "lastUpdated": "2020-05-20"
+      }
+    }
+  ]
+}
