@@ -1,23 +1,27 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Form from "@/views/Form.vue";
+import Dashboard from "@/views/Dashboard.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "Form",
-    component: Form
+    name: "Dashboard",
+    component: Dashboard
   },
   {
-    path: "/drafts",
-    name: "Drafts",
+    path: "/form",
+    name: "Form",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "Drafts" */ "@/views/Drafts.vue")
+    component: () => import(/* webpackChunkName: "Drafts" */ "@/views/Form.vue")
+  },
+  {
+    path: "/trades",
+    name: "Trades",
+    component: () => import("@/views/Trades.vue")
   }
 ];
 

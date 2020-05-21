@@ -1,249 +1,243 @@
 <template>
   <div>
-    <h1>Form ID: {{ id }}</h1>
-    <v-form ref="outgoingForm" v-model="formValidity">
+    <v-form ref="tradeForm" v-model="valid">
       <v-container>
         <v-row>
           <v-col cols="12" md="6">
-            <header>Direction</header>
-            <v-radio-group v-model="direction" row>
-              <v-radio :key="`outgoing`" :label="`Outgoing`" :value="`outgoing`"></v-radio>
-              <v-radio :key="`incoming`" :label="`Incoming`" :value="`incoming`"></v-radio>
-            </v-radio-group>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-select
-              v-model="applicant"
-              :items="applicantList"
-              label="Applicant"
-              height="42"
-              outlined
-            ></v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-select
-              v-model="beneficiaryNames"
-              :items="beneficiaryList"
-              chips
-              multiple
-              label="Beneficary Names"
-              :rules="beneficiaryRules"
-              required
-              outlined
-            ></v-select>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-select
-              v-model="facility"
-              :items="facilityList"
-              :rules="facilityRules"
-              label="Facility"
-              height="42"
-              required
-              outlined
-              :disabled="direction === 'incoming'"
-            ></v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col col="12" md="6">
-            <v-text-field
-              label="LC Reference Number"
-              v-model="lcRefNumber"
-              :rules="lcRefNumberRules"
-              height="42"
-              required
-              outlined
-            ></v-text-field>
-          </v-col>
-          <v-col col="12" md="6">
-            <v-select
-              v-model="lcType"
-              :items="lcTypeList"
-              :rules="lcTypeRules"
-              label="LC Type"
-              height="42"
-              required
-              outlined
-            ></v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col col="12" md="6">
-            <v-select
-              v-model="tranche"
-              :rules="trancheRules"
-              :items="trancheList"
-              :disabled="direction === 'incoming'"
-              label="Tranche"
-              height="42"
-              required
-              outlined
-            ></v-select>
-          </v-col>
-          <v-col col="12" md="6">
-            <v-select
-              v-model="issuingBank"
-              :items="issuingBankList"
-              :rules="issuingBankRules"
-              label="Issuing Bank Name"
-              height="42"
-              required
-              outlined
-            ></v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-menu
-              ref="issuanceDatePicker"
-              v-model="issuanceDatePicker"
+            <v-dialog
+              ref="executionDatePicker"
+              v-model="executionDatePicker"
               :close-on-content-click="false"
-              :return-value.sync="issuanceDate"
+              :return-value.sync="form.executionDate"
               transition="scale-transition"
               offset-y
-              min-width="290px"
+              max-width="290px"
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="issuanceDate"
-                  :rules="issuanceDateRules"
-                  label="Issuance Date"
+                  v-model="form.executionDate"
+                  label="Execution Date"
                   prepend-icon="event"
                   readonly
                   outlined
+                  dense
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="issuanceDate" no-title scrollable>
+              <v-date-picker v-model="form.executionDate" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="issuanceDatePicker = false"
+                <v-btn text color="primary" @click="executionDatePicker = false"
                   >Cancel</v-btn
                 >
                 <v-btn
                   text
                   color="primary"
-                  @click="$refs.issuanceDatePicker.save(issuanceDate)"
+                  @click="$refs.executionDatePicker.save(form.executionDate)"
                   >OK</v-btn
                 >
               </v-date-picker>
-            </v-menu>
+            </v-dialog>
           </v-col>
           <v-col cols="12" md="6">
-            <v-menu
-              ref="expiryDatePicker"
-              v-model="expiryDatePicker"
+            <v-dialog
+              ref="dialog"
+              v-model="timeModal"
+              :return-value.sync="form.time"
+              persistent
+              width="290px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="form.time"
+                  label="Execution Time"
+                  prepend-icon="mdi-clock-time-four-outline"
+                  readonly
+                  outlined
+                  dense
+                  v-bind="attrs"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-time-picker v-if="timeModal" v-model="form.time" full-width>
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="timeModal = false">
+                  Cancel
+                </v-btn>
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.dialog.save(form.time)"
+                >
+                  OK
+                </v-btn>
+              </v-time-picker>
+            </v-dialog>
+          </v-col>
+        </v-row>
+        <!-- Date & Time pickers -->
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              v-model="form.trader"
+              :items="traderList"
+              label="Trader"
+              dense
+              outlined
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              v-model="form.book"
+              :items="booksList"
+              :loading="booksLoading"
+              :disabled="booksList.length === 0"
+              label="Book"
+              dense
+              outlined
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+        <!-- trader & book -->
+        <v-row>
+          <v-col cols="12" md="6">
+            <fieldset>
+              <legend>Trade type</legend>
+              <v-radio-group v-model="form.tradeType" row dense>
+                <v-radio label="Buy" value="buy" dense></v-radio>
+                <v-radio label="Sell" value="sell" dense></v-radio>
+              </v-radio-group>
+            </fieldset>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              v-model="form.counterparty"
+              :items="counterpartiesList"
+              :loading="counterpartyLoading"
+              :disabled="counterpartiesList.length === 0"
+              label="Counterparty"
+              dense
+              outlined
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+        <!-- trade type & counterparty -->
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-select
+              v-model="form.product"
+              :items="productList"
+              label="Product"
+              dense
+              outlined
+            ></v-select>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              label="Quantity"
+              v-model="form.quantity"
+              type="number"
+              hint="Specify the amount"
+              min="0"
+              dense
+              outlined
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-dialog
+              ref="deliveryDatePicker"
+              v-model="deliveryDatePicker"
               :close-on-content-click="false"
-              :return-value.sync="expiryDate"
+              :return-value.sync="form.deliveryDate"
               transition="scale-transition"
               offset-y
-              min-width="290px"
+              max-width="290px"
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="expiryDate"
-                  label="Expiry Date"
-                  :rules="expiryDateRules"
+                  v-model="form.deliveryDate"
+                  label="Delivery Date"
                   prepend-icon="event"
                   readonly
+                  dense
                   outlined
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="expiryDate" no-title scrollable>
+              <v-date-picker v-model="form.deliveryDate" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="expiryDatePicker = false"
+                <v-btn text color="primary" @click="deliveryDatePicker = false"
                   >Cancel</v-btn
                 >
                 <v-btn
                   text
                   color="primary"
-                  @click="$refs.expiryDatePicker.save(expiryDate)"
+                  @click="$refs.deliveryDatePicker.save(form.deliveryDate)"
                   >OK</v-btn
                 >
               </v-date-picker>
-            </v-menu>
+            </v-dialog>
           </v-col>
-        </v-row>
-        <v-row>
-          <v-col col="12" md="6">
+          <v-col cols="12" md="6">
             <v-select
-              v-model="currency"
-              :items="currencyList"
-              label="Currency"
-              height="42"
+              v-model="form.pipeline"
+              :items="pipelinesList"
+              :loading="pipelineLoading"
+              :disabled="pipelinesList.length === 0"
               outlined
+              dense
+              label="Pipeline"
             ></v-select>
-          </v-col>
-          <v-col col="12" md="6">
-            <v-text-field outlined label="Face Value"></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col col="12" md="6">
-            <v-text-field outlined label="Tolerance"></v-text-field>
-          </v-col>
-          <v-col col="12" md="6">
-            <v-text-field
-              outlined
-              label="New Issuance Fee"
-              hint="If different from default"
-              :disabled="direction === 'incoming'"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col col="12" md="6">
-            <v-text-field
-              outlined
-              label="Autocancellation threshold"
-              hint="Enter a threshold for cancellation, if applicable."
-            ></v-text-field>
-          </v-col>
-          <v-col col="12" md="6">
-            <v-text-field
-              outlined
-              label="Trade reference number"
-            ></v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="12" md="6">
-            <header>Is the advising bank confirming?</header>
-            <v-radio-group v-model="isAdvisingBankConfirming" row>
-              <v-radio :key="`no`" :label="`No`" :value="`no`"></v-radio>
-              <v-radio :key="`yes`" :label="`Yes`" :value="`yes`"></v-radio>
-            </v-radio-group>
-          </v-col>
-          <v-col col="12" md="6">
             <v-select
-              v-model="advisingBank"
-              :items="advisingBankList"
-              label="Advising Bank Name"
-              height="42"
+              v-model="form.location"
+              :items="locationsList"
+              :loading="locationLoading"
+              :disabled="locationsList.length === 0"
+              label="Location"
               outlined
+              dense
             ></v-select>
           </v-col>
-        </v-row>
-        <v-row>
-          <v-col col="12" md="6">
+          <v-col cols="12" md="6">
             <v-textarea
+              v-model="form.comments"
+              label="Comments"
               outlined
-              name="input-7-1"
-              label="LC description"
+              dense
             ></v-textarea>
           </v-col>
         </v-row>
-        <hr>
         <v-row>
-          <v-col cols="12" center>
-            <v-btn
-              @click="submitForm"
-              color="primary"
-              :disabled="!formValidity"
-            >
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              v-model="form.broker"
+              :items="brokersList"
+              label="Broker"
+              dense
+              outlined
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="form.commision"
+              outlined
+              dense
+              min="0"
+              type="number"
+              label="Commision Rate"
+              hint="Specify the amount"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <hr />
+        <v-row>
+          <v-col cols="12" class="d-flex justify-space-between">
+            <v-btn @click="submitForm" color="primary" :disabled="!valid">
               Submit
             </v-btn>
             <v-btn @click="resetForm">Reset</v-btn>
@@ -252,135 +246,109 @@
         </v-row>
       </v-container>
     </v-form>
+    <v-snackbar v-model="snackbar">
+      {{ snackBarText }}
+      <v-btn :color="snackColor" text @click="snackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Outgoing",
+  name: "Form",
   data: () => ({
-    id: "",
-    isIncomingForm: false,
-    currency: [],
-    currencyList: ["USD", "GBP", "JPY"],
-
-    beneficiaryNames: [],
-    beneficiaryList: ["John Doe", "Alan Smith", "Michael Scott"],
-    beneficiaryRules: [v => v.length > 0 || "Choose a beneficiary"],
-
-    facility: "",
-    facilityList: ["Facility 1", "Facility 2", "Facility 3"],
-    facilityRules: [v => v.length > 0 || "Choose a facility"],
-
-    lcRefNumber: "",
-    lcRefNumberRules: [v => v.length > 0 || "Specifiy the LC reference number"],
-
-    lcType: "",
-    lcTypeList: ["LC 1", "LC 2", "LC 3"],
-    lcTypeRules: [v => v.length > 0 || "Choose a letter of credit type"],
-
-    tranche: "",
-    trancheList: ["Tranche 1", "Tranche 2", "Tranche 3"],
-    trancheRules: [v => v.length > 0 || "Choose a tranche type"],
-
-    issuingBank: "",
-    issuingBankList: ["Bank 1", "Bank 2", "Bank 3"],
-    issuingBankRules: [v => v.length > 0 || "Choose an issuing bank"],
-
-    issuanceDatePicker: false,
-    issuanceDate: new Date().toISOString().substr(0, 10),
-    issuanceDateRules: [v => v.length > 0 || "Choose an expiration date"],
-
-    advisingBank: "",
-    advisingBankList: ["Bank 1", "Bank 2", "Bank 3"],
-
-    applicant: "",
-    applicantList: ["Applicant 1", "Applicant 2", "Applicant 3"],
-
-    expiryDatePicker: false,
-    expiryDate: "",
-    expiryDateRules: [v => v.length > 0 || "Choose an expiration date"],
-
-    isAdvisingBankConfirming: "",
-    direction: "",
-
-    formValidity: false
+    form: {
+      executionDate: "",
+      time: null,
+      trader: "",
+      book: "",
+      tradeType: "",
+      counterparty: "",
+      product: "",
+      quantity: "",
+      deliveryDate: "",
+      pipeline: "",
+      location: "",
+      comments: "",
+      broker: "",
+      commision: ""
+    },
+    booksList: [],
+    booksLoading: true,
+    brokersList: [],
+    brokersLoading: true,
+    counterpartiesList: [],
+    counterpartyLoading: true,
+    locationsList: [],
+    locationLoading: true,
+    pipelinesList: [],
+    pipelineLoading: true,
+    pricesList: [],
+    pricesLoading: true,
+    deliveryDatePicker: false,
+    executionDatePicker: false,
+    productList: ["Product 1", "Product 2", "Product 3"],
+    traderList: ["Trader 1", "Trader 2", "Trader 3"],
+    snackbar: "",
+    snackBarText: "",
+    snackColor: "blue",
+    timeModal: false,
+    valid: false
   }),
+  async created() {
+    await this.axios.get("http://localhost:3000/books")
+      .then(({ data }) => this.booksList = data)
+      .catch(err => console.error(`Couldn't load books: ${err}`))
+      .finally(() => this.booksLoading = false);
+
+    await this.axios.get("http://localhost:3000/counterparty")
+      .then(({ data }) => this.counterpartiesList = data)
+      .catch(err => console.error(`Couldn't load counterparties: ${err}`))
+      .finally(() => this.counterpartyLoading = false);
+
+    await this.axios.get("http://localhost:3000/pipeline")
+      .then(({ data }) => this.pipelinesList = data)
+      .catch(err => console.error(`Couldn't load pipelines: ${err}`))
+      .finally(() => this.pipelineLoading = false);
+
+    await this.axios.get("http://localhost:3000/broker")
+      .then(({ data }) => this.brokersList = data)
+      .catch(err => console.error(`Couldn't load brokers: ${err}`))
+      .finally(() => this.brokersLoading = false);
+    
+    await this.axios.get("http://localhost:3000/price")
+      .then(({ data }) => this.pricesList = data)
+      .catch(err => console.error(`Couldn't load prices: ${err}`))
+      .finally(() => this.pricesLoading = false);
+
+    await this.axios.get("http://localhost:3000/location")
+      .then(({ data }) => this.locationsList = data)
+      .catch(err => console.error(`Couldn't load locations: ${err}`))
+      .finally(() => this.locationLoading = false);
+  },
   methods: {
-    async postForm(location) {
-      const {
-        id,
-        isIncomingForm,
-        beneficiaryNames,
-        facility,
-        lcRefNumber,
-        lcType,
-        tranche,
-        issuingBank,
-        issuanceDate,
-        expiryDate,
-        firstCreated
-      } = this;
-      const data = {
-        isIncomingForm,
-        beneficiaryNames,
-        facility,
-        lcRefNumber,
-        lcType,
-        tranche,
-        issuingBank,
-        issuanceDate,
-        expiryDate,
-        id,
-        timestamps: {
-          firstCreated,
-          lastUpdated: new Date().toISOString().substr(0, 10)
-        }
-      };
-      return await fetch(`http://localhost:3000/${location}`, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, *cors, same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
-        headers: {
-          "Content-Type": "application/json"
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify(data) // body data type must match "Content-Type" header
-      });
+    async submitForm() {
+      await this.axios
+        .post("http://localhost:3000/trades", this.form)
+        .then(() => {
+          this.$refs.tradeForm.reset();
+          console.log("success");
+        })
+        .catch(err => console.error(err));
     },
-    submitForm() {
-      this.postForm("forms")
-        .then(() => this.resetForm())
-        .catch(() => console.log("error"));
-    },
-    saveForm() {
-      this.postForm("drafts");
-    },
-    init() {
-      this.firstCreated = new Date().toISOString().substr(0, 10);
-      this.id = Math.floor(Math.random() * 10000000);
+    async saveForm() {
+      await this.axios
+        .post("http://localhost:3000/drafts", this.form)
+        .then(() => {
+          console.log("success");
+        })
+        .catch(err => console.error(err));
     },
     resetForm() {
-      this.$refs.outgoingForm.reset();
-      this.init();
+      this.$refs.tradeForm.reset();
     }
-  },
-  created() {
-    console.log("component", this.$store.state.draft);
-    this.id = this.$store.state.draft.id;
-    this.beneficiaryNames = this.$store.state.draft.beneficiaryNames;
-    this.facility = this.$store.state.draft.facility;
-    this.expiryDate = this.$store.state.draft.expiryDate;
-    this.isIncomingForm = this.$store.state.draft.isIncomingForm;
-    this.lcRefNumber = this.$store.state.draft.lcRefNumber;
-    this.lcType = this.$store.state.draft.lcType;
-    this.timestamps = this.$store.state.draft.timestamps;
-    this.tranche = this.$store.state.draft.tranche;
-    this.issuingBank = this.$store.state.draft.issuingBank;
-    this.issuingDate = this.$store.state.draft.issuingDate;
   }
 };
 </script>
@@ -391,5 +359,15 @@ export default {
   margin-bottom: 5px;
   color: rgba(0, 0, 0, 0.6);
   margin-right: 5px;
+}
+fieldset {
+  border-radius: 5px;
+  border: solid 1px rgb(180, 180, 180);
+  outline-width: 0;
+}
+fieldset legend {
+  font-size: 12px;
+  padding: 0 3px;
+  margin-left: 10px;
 }
 </style>

@@ -1,18 +1,53 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
+      <v-app-bar-nav-icon
+        v-if="$vuetify.breakpoint.smAndDown"
+        @click.stop="drawer = !drawer"
+      ></v-app-bar-nav-icon>
       <router-link to="/">
         <div class="logoType">Hartree<sup>&#174;</sup></div>
-        <div class="appName">Letter of Credit Tracker</div>
+        <div class="appName">Trades App</div>
       </router-link>
+      <nav v-if="$vuetify.breakpoint.mdAndUp">
+        <v-btn text color="white" @click="navigateTo('/')">
+          Dashboard
+        </v-btn>
+        <v-btn text color="white" @click="navigateTo('/form')">
+          Form
+        </v-btn>
+        <v-btn text color="white" @click="navigateTo('/trades')">
+          Trades
+        </v-btn>
+      </nav>
     </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" absolute temporary>
+      <v-list nav dense>
+        <v-list-item-group v-model="group" active-class="text--accent-4">
+          <v-list-item>
+            <v-list-item-title @click="navigateTo('/')">
+              Dashboard
+            </v-list-item-title>
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-title @click="navigateTo('/form')">
+              Form
+            </v-list-item-title>
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-title @click="navigateTo('/trades')">
+              Trades
+            </v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
 
     <v-content>
       <v-container>
-        <ul>
-          <li><router-link to="/">Form</router-link></li>
-          <li><router-link to="/drafts">Drafts</router-link></li>
-        </ul>
         <router-view />
       </v-container>
     </v-content>
@@ -22,8 +57,18 @@
 <script>
 export default {
   name: "App",
+  data: () => ({
+    drawer: false,
+    group: null
+  }),
+
+  watch: {
+    group() {
+      this.drawer = false;
+    }
+  },
   methods: {
-    toggleTab(path) {
+    navigateTo(path) {
       this.$router.push(path);
     }
   }
@@ -74,9 +119,21 @@ ul li a {
   text-transform: uppercase;
   transition: none;
   user-select: none;
-  border-bottom: solid 2px transparent;
 }
-ul li a.router-link-exact-active {
-  border-bottom: solid 2px #1867c0 !important;
+
+aside a {
+  text-decoration: none;
+}
+
+nav {
+  flex: 1 1 auto !important;
+  align-items: center;
+  display: flex;
+  justify-content: flex-end !important;
+}
+
+nav button {
+  text-decoration: none;
+  color: white;
 }
 </style>

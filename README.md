@@ -1,4 +1,4 @@
-# lc-tracker-demo
+# trades-app
 
 ## Project setup
 ```
