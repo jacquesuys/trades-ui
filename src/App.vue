@@ -48,6 +48,7 @@
 
     <v-content>
       <v-container>
+        <NotificationContainer />
         <router-view />
       </v-container>
     </v-content>
@@ -55,6 +56,8 @@
 </template>
 
 <script>
+import NotificationContainer from "@/components/NotificationContainer";
+
 export default {
   name: "App",
   data: () => ({
@@ -71,6 +74,9 @@ export default {
     navigateTo(path) {
       this.$router.push(path);
     }
+  },
+  components: {
+    NotificationContainer
   }
 };
 </script>

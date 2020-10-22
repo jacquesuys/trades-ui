@@ -26,6 +26,7 @@
 
 <script>
 import { format } from "date-fns";
+import tradesService from "@/services/TradesService";
 
 export default {
   name: "Dashboard",
@@ -57,8 +58,8 @@ export default {
     }
   },
   async created() {
-    await this.axios
-      .get("http://localhost:3000/trades")
+    await tradesService
+      .getTrades()
       .then(({ data }) => {
         this.data = data;
       })

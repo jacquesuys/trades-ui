@@ -1,5 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import * as form from "@/store/modules/form";
+import * as notification from "@/store/modules/notifications";
 
 Vue.use(Vuex);
 
@@ -14,5 +16,8 @@ export default new Vuex.Store({
     }
   },
   actions: {},
-  modules: {}
+  modules: {
+    form,
+    notification
+  }
 });

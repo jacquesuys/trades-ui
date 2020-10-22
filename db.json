@@ -103,12 +103,61 @@
       "broker": "Broker 1",
       "commision": "876543",
       "id": 3
+    },
+    {
+      "executionDate": "",
+      "time": null,
+      "trader": "",
+      "book": "",
+      "tradeType": "",
+      "counterparty": "",
+      "price": "",
+      "product": "",
+      "quantity": "",
+      "deliveryStartDate": "2020-10-15",
+      "deliveryEndDate": "2020-10-23",
+      "pipeline": "",
+      "location": "",
+      "comments": "",
+      "broker": "",
+      "commision": "",
+      "zone": "",
+      "deliveryDate": "2020-10-24",
+      "id": 4
     }
   ],
-  "books": ["Book 1", "Book 2", "Book 3"],
-  "counterparty": ["Counter party 1", "Counter party 2", "Counter party 3"],
-  "pipeline": ["Pipeline 1", "Pipeline 2", "Pipeline 3"],
-  "broker": ["Broker 1", "Broker 2", "Broker 3"],
-  "price": ["Price 1", "Price 2", "Price 3"],
-  "location": ["Location 1", "Location 2"]
+  "books": [
+    "Book 1",
+    "Book 2",
+    "Book 3"
+  ],
+  "counterparty": [
+    "Counter party 1",
+    "Counter party 2",
+    "Counter party 3"
+  ],
+  "pipeline": [
+    "Pipeline 1",
+    "Pipeline 2",
+    "Pipeline 3"
+  ],
+  "broker": [
+    "Broker 1",
+    "Broker 2",
+    "Broker 3"
+  ],
+  "price": [
+    "Price 1",
+    "Price 2",
+    "Price 3"
+  ],
+  "location": [
+    "Location 1",
+    "Location 2"
+  ],
+  "zone": [
+    "Zone 1",
+    "Zone 2",
+    "Zone 3"
+  ]
 }

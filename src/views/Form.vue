@@ -40,7 +40,7 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-dialog
-              ref="dialog"
+              ref="timeModal"
               v-model="timeModal"
               :return-value.sync="form.time"
               persistent
@@ -66,7 +66,7 @@
                 <v-btn
                   text
                   color="primary"
-                  @click="$refs.dialog.save(form.time)"
+                  @click="$refs.timeModal.save(form.time)"
                 >
                   OK
                 </v-btn>
@@ -123,13 +123,13 @@
         <!-- trade type & counterparty -->
         <v-row>
           <v-col cols="12" md="6">
-            <v-select
+            <v-autocomplete
               v-model="form.product"
               :items="productList"
               label="Product"
               dense
               outlined
-            ></v-select>
+            ></v-autocomplete>
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field
@@ -146,8 +146,8 @@
         <v-row>
           <v-col cols="12" md="6">
             <v-dialog
-              ref="deliveryDatePicker"
-              v-model="deliveryDatePicker"
+              ref="deliveryStartDatePicker"
+              v-model="deliveryStartDatePicker"
               :close-on-content-click="false"
               :return-value.sync="form.deliveryDate"
               transition="scale-transition"
@@ -156,8 +156,8 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="form.deliveryDate"
-                  label="Delivery Date"
+                  v-model="form.deliveryStartDate"
+                  label="Delivery Start Date"
                   prepend-icon="event"
                   readonly
                   dense
@@ -165,22 +165,59 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="form.deliveryDate" no-title scrollable>
+              <v-date-picker v-model="form.deliveryStartDate" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="deliveryDatePicker = false"
+                <v-btn text color="primary" @click="deliveryStartDatePicker = false"
                   >Cancel</v-btn
                 >
                 <v-btn
                   text
                   color="primary"
-                  @click="$refs.deliveryDatePicker.save(form.deliveryDate)"
+                  @click="deliveryStart"
                   >OK</v-btn
                 >
               </v-date-picker>
             </v-dialog>
           </v-col>
           <v-col cols="12" md="6">
-            <v-select
+            <v-dialog
+              ref="deliveryEndDatePicker"
+              v-model="deliveryEndDatePicker"
+              :close-on-content-click="false"
+              :return-value.sync="form.deliveryEndDate"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="form.deliveryEndDate"
+                  label="Delivery End Date"
+                  prepend-icon="event"
+                  readonly
+                  dense
+                  outlined
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker v-model="form.deliveryEndDate" no-title scrollable>
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="deliveryEndDatePicker = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="deliveryEnd"
+                  >OK</v-btn
+                >
+              </v-date-picker>
+            </v-dialog>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-autocomplete
               v-model="form.pipeline"
               :items="pipelinesList"
               :loading="pipelineLoading"
@@ -188,12 +225,23 @@
               outlined
               dense
               label="Pipeline"
-            ></v-select>
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              v-model="form.zone"
+              :items="zonesList"
+              :loading="zonesLoading"
+              :disabled="zonesList.length === 0"
+              label="Zones"
+              outlined
+              dense
+            ></v-autocomplete>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="12" md="6">
-            <v-select
+            <v-autocomplete
               v-model="form.location"
               :items="locationsList"
               :loading="locationLoading"
@@ -201,15 +249,16 @@
               label="Location"
               outlined
               dense
-            ></v-select>
+            ></v-autocomplete>
           </v-col>
           <v-col cols="12" md="6">
-            <v-textarea
-              v-model="form.comments"
-              label="Comments"
+            <v-autocomplete
+              v-model="form.price"
+              :items="pricesList"
+              label="Price"
               outlined
               dense
-            ></v-textarea>
+            ></v-autocomplete>
           </v-col>
         </v-row>
         <v-row>
@@ -232,6 +281,16 @@
               label="Commision Rate"
               hint="Specify the amount"
             ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-textarea
+              v-model="form.comments"
+              label="Comments"
+              outlined
+              dense
+            ></v-textarea>
           </v-col>
         </v-row>
         <hr />
@@ -266,14 +325,17 @@ export default {
       book: "",
       tradeType: "",
       counterparty: "",
+      price: "",
       product: "",
       quantity: "",
-      deliveryDate: "",
+      deliveryStartDate: "",
+      deliveryEndDate: "",
       pipeline: "",
       location: "",
       comments: "",
       broker: "",
-      commision: ""
+      commision: "",
+      zone: "",
     },
     booksList: [],
     booksLoading: true,
@@ -284,10 +346,13 @@ export default {
     locationsList: [],
     locationLoading: true,
     pipelinesList: [],
+    zonesList: [],
+    zonesLoading: true,
     pipelineLoading: true,
     pricesList: [],
     pricesLoading: true,
-    deliveryDatePicker: false,
+    deliveryStartDatePicker: false,
+    deliveryEndDatePicker: false,
     executionDatePicker: false,
     productList: ["Product 1", "Product 2", "Product 3"],
     traderList: ["Trader 1", "Trader 2", "Trader 3"],
@@ -298,56 +363,73 @@ export default {
     valid: false
   }),
   async created() {
-    await this.axios.get("http://localhost:3000/books")
-      .then(({ data }) => this.booksList = data)
+    await this.axios
+      .get("http://localhost:3000/books")
+      .then(({ data }) => (this.booksList = data))
       .catch(err => console.error(`Couldn't load books: ${err}`))
-      .finally(() => this.booksLoading = false);
+      .finally(() => (this.booksLoading = false));
 
-    await this.axios.get("http://localhost:3000/counterparty")
-      .then(({ data }) => this.counterpartiesList = data)
+    await this.axios
+      .get("http://localhost:3000/counterparty")
+      .then(({ data }) => (this.counterpartiesList = data))
       .catch(err => console.error(`Couldn't load counterparties: ${err}`))
-      .finally(() => this.counterpartyLoading = false);
+      .finally(() => (this.counterpartyLoading = false));
 
-    await this.axios.get("http://localhost:3000/pipeline")
-      .then(({ data }) => this.pipelinesList = data)
+    await this.axios
+      .get("http://localhost:3000/pipeline")
+      .then(({ data }) => (this.pipelinesList = data))
       .catch(err => console.error(`Couldn't load pipelines: ${err}`))
-      .finally(() => this.pipelineLoading = false);
+      .finally(() => (this.pipelineLoading = false));
 
-    await this.axios.get("http://localhost:3000/broker")
-      .then(({ data }) => this.brokersList = data)
+    await this.axios
+      .get("http://localhost:3000/broker")
+      .then(({ data }) => (this.brokersList = data))
       .catch(err => console.error(`Couldn't load brokers: ${err}`))
-      .finally(() => this.brokersLoading = false);
-    
-    await this.axios.get("http://localhost:3000/price")
-      .then(({ data }) => this.pricesList = data)
-      .catch(err => console.error(`Couldn't load prices: ${err}`))
-      .finally(() => this.pricesLoading = false);
+      .finally(() => (this.brokersLoading = false));
 
-    await this.axios.get("http://localhost:3000/location")
-      .then(({ data }) => this.locationsList = data)
+    await this.axios
+      .get("http://localhost:3000/price")
+      .then(({ data }) => (this.pricesList = data))
+      .catch(err => console.error(`Couldn't load prices: ${err}`))
+      .finally(() => (this.pricesLoading = false));
+
+    await this.axios
+      .get("http://localhost:3000/location")
+      .then(({ data }) => (this.locationsList = data))
       .catch(err => console.error(`Couldn't load locations: ${err}`))
-      .finally(() => this.locationLoading = false);
+      .finally(() => (this.locationLoading = false));
+
+    await this.axios
+      .get("http://localhost:3000/zone")
+      .then(({ data }) => (this.zonesList = data))
+      .catch(err => console.error(`Couldn't load zones: ${err}`))
+      .finally(() => (this.zonesLoading = false));
   },
   methods: {
-    async submitForm() {
-      await this.axios
-        .post("http://localhost:3000/trades", this.form)
-        .then(() => {
-          this.$refs.tradeForm.reset();
-          console.log("success");
-        })
-        .catch(err => console.error(err));
+    submitForm() {
+      this.$store
+        .dispatch("form/submit", this.form)
+        .then(() => this.resetForm());
     },
-    async saveForm() {
-      await this.axios
-        .post("http://localhost:3000/drafts", this.form)
-        .then(() => {
-          console.log("success");
-        })
-        .catch(err => console.error(err));
+    saveForm() {
+      this.$store.dispatch("form/save", this.form);
     },
     resetForm() {
       this.$refs.tradeForm.reset();
+    },
+    deliveryStart() {
+      this.$refs.deliveryStartDatePicker.save(this.form.deliveryStartDate);
+
+      if (this.form.deliveryEndDate === "" || this.form.deliveryStartDate > this.form.deliveryEndDate) {
+        this.form.deliveryEndDate = this.form.deliveryStartDate;
+      }
+    },
+    deliveryEnd() {
+      this.$refs.deliveryEndDatePicker.save(this.form.deliveryEndDate);
+
+      if (this.form.deliveryStartDate === "" || this.form.deliveryStartDate > this.form.deliveryEndDate) {
+        this.form.deliveryStartDate = this.form.deliveryEndDate;
+      }
     }
   }
 };
