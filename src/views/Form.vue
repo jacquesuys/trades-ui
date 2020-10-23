@@ -79,7 +79,8 @@
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.trader"
-              :items="traderList"
+              :items="tradersList"
+              :loading="tradersLoading"
               label="Trader"
               dense
               outlined
@@ -125,7 +126,8 @@
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.product"
-              :items="productList"
+              :items="productsList"
+              :loading="productsLoading"
               label="Product"
               dense
               outlined
@@ -165,17 +167,19 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="form.deliveryStartDate" no-title scrollable>
+              <v-date-picker
+                v-model="form.deliveryStartDate"
+                no-title
+                scrollable
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="deliveryStartDatePicker = false"
-                  >Cancel</v-btn
-                >
                 <v-btn
                   text
                   color="primary"
-                  @click="deliveryStart"
-                  >OK</v-btn
+                  @click="deliveryStartDatePicker = false"
+                  >Cancel</v-btn
                 >
+                <v-btn text color="primary" @click="deliveryStart">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -202,15 +206,13 @@
               </template>
               <v-date-picker v-model="form.deliveryEndDate" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="deliveryEndDatePicker = false"
-                  >Cancel</v-btn
-                >
                 <v-btn
                   text
                   color="primary"
-                  @click="deliveryEnd"
-                  >OK</v-btn
+                  @click="deliveryEndDatePicker = false"
+                  >Cancel</v-btn
                 >
+                <v-btn text color="primary" @click="deliveryEnd">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -285,6 +287,15 @@
         </v-row>
         <v-row>
           <v-col cols="12" md="6">
+            <v-select
+              v-model="form.deal"
+              :items="dealsList"
+              label="Deal"
+              outlined
+              dense
+            ></v-select>
+          </v-col>
+          <v-col cols="12" md="6">
             <v-textarea
               v-model="form.comments"
               label="Comments"
@@ -336,7 +347,9 @@ export default {
       broker: "",
       commision: "",
       zone: "",
+      deal: "Firm"
     },
+    dealsList: ["Firm", "Interruptable"],
     booksList: [],
     booksLoading: true,
     brokersList: [],
@@ -354,8 +367,10 @@ export default {
     deliveryStartDatePicker: false,
     deliveryEndDatePicker: false,
     executionDatePicker: false,
-    productList: ["Product 1", "Product 2", "Product 3"],
-    traderList: ["Trader 1", "Trader 2", "Trader 3"],
+    productsList: [],
+    productsLoading: true,
+    tradersList: [],
+    tradersLoading: true,
     snackbar: "",
     snackBarText: "",
     snackColor: "blue",
@@ -404,6 +419,18 @@ export default {
       .then(({ data }) => (this.zonesList = data))
       .catch(err => console.error(`Couldn't load zones: ${err}`))
       .finally(() => (this.zonesLoading = false));
+
+    await this.axios
+      .get("http://localhost:3000/product")
+      .then(({ data }) => (this.productsList = data))
+      .catch(err => console.error(`Couldn't load products: ${err}`))
+      .finally(() => (this.productsLoading = false));
+
+    await this.axios
+      .get("http://localhost:3000/traders")
+      .then(({ data }) => (this.tradersList = data))
+      .catch(err => console.error(`Couldn't load products: ${err}`))
+      .finally(() => (this.tradersLoading = false));
   },
   methods: {
     submitForm() {
@@ -420,14 +447,20 @@ export default {
     deliveryStart() {
       this.$refs.deliveryStartDatePicker.save(this.form.deliveryStartDate);
 
-      if (this.form.deliveryEndDate === "" || this.form.deliveryStartDate > this.form.deliveryEndDate) {
+      if (
+        this.form.deliveryEndDate === "" ||
+        this.form.deliveryStartDate > this.form.deliveryEndDate
+      ) {
         this.form.deliveryEndDate = this.form.deliveryStartDate;
       }
     },
     deliveryEnd() {
       this.$refs.deliveryEndDatePicker.save(this.form.deliveryEndDate);
 
-      if (this.form.deliveryStartDate === "" || this.form.deliveryStartDate > this.form.deliveryEndDate) {
+      if (
+        this.form.deliveryStartDate === "" ||
+        this.form.deliveryStartDate > this.form.deliveryEndDate
+      ) {
         this.form.deliveryStartDate = this.form.deliveryEndDate;
       }
     }

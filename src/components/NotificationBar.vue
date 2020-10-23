@@ -4,19 +4,12 @@
     :color="notification.type"
     bottom
     centered
-    absolute 
+    absolute
   >
     {{ notification.message }}
-    <template v-slot:action="{ attrs }">
-      <v-btn
-        color="white"
-        text
-        v-bind="attrs"
-        @click="remove(notification)"
-      >
-        Close
-      </v-btn>
-    </template>
+    <v-btn text @click="remove(notification)">
+      Close
+    </v-btn>
   </v-snackbar>
 </template>
 
@@ -33,7 +26,7 @@ export default {
   },
   data: () => ({
     timeout: null,
-    snackbar: true,
+    snackbar: true
   }),
   mounted() {
     this.timeout = setTimeout(() => this.remove(this.notification), 5000);
