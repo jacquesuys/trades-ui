@@ -18,7 +18,9 @@
                   v-model="form.executionDate"
                   label="Execution Date"
                   prepend-icon="event"
+                  :rules="dateRules"
                   readonly
+                  required
                   outlined
                   dense
                   v-on="on"
@@ -38,41 +40,7 @@
               </v-date-picker>
             </v-dialog>
           </v-col>
-          <v-col cols="12" md="6">
-            <v-dialog
-              ref="timeModal"
-              v-model="timeModal"
-              :return-value.sync="form.time"
-              persistent
-              width="290px"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="form.time"
-                  label="Execution Time"
-                  prepend-icon="mdi-clock-time-four-outline"
-                  readonly
-                  outlined
-                  dense
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-time-picker v-if="timeModal" v-model="form.time" full-width>
-                <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="timeModal = false">
-                  Cancel
-                </v-btn>
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.timeModal.save(form.time)"
-                >
-                  OK
-                </v-btn>
-              </v-time-picker>
-            </v-dialog>
-          </v-col>
+          <v-col cols="12" md="6"> </v-col>
         </v-row>
         <!-- Date & Time pickers -->
         <v-row>
@@ -82,6 +50,8 @@
               :items="tradersList"
               :loading="tradersLoading"
               label="Trader"
+              :rules="traderRules"
+              required
               dense
               outlined
             ></v-autocomplete>
@@ -92,6 +62,8 @@
               :items="booksList"
               :loading="booksLoading"
               :disabled="booksList.length === 0"
+              :rules="bookRules"
+              required
               label="Book"
               dense
               outlined
@@ -103,7 +75,13 @@
           <v-col cols="12" md="6">
             <fieldset>
               <legend>Trade type</legend>
-              <v-radio-group v-model="form.tradeType" row dense>
+              <v-radio-group
+                v-model="form.tradeType"
+                :rules="tradeTypeRules"
+                required
+                dense
+                row
+              >
                 <v-radio label="Buy" value="buy" dense></v-radio>
                 <v-radio label="Sell" value="sell" dense></v-radio>
               </v-radio-group>
@@ -115,6 +93,8 @@
               :items="counterpartiesList"
               :loading="counterpartyLoading"
               :disabled="counterpartiesList.length === 0"
+              :rules="counterpartyRules"
+              required
               label="Counterparty"
               dense
               outlined
@@ -126,9 +106,11 @@
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.product"
+              label="Product"
               :items="productsList"
               :loading="productsLoading"
-              label="Product"
+              :rules="productRules"
+              required
               dense
               outlined
             ></v-autocomplete>
@@ -137,6 +119,8 @@
             <v-text-field
               label="Quantity"
               v-model="form.quantity"
+              :rules="quantityRules"
+              required
               type="number"
               hint="Specify the amount"
               min="0"
@@ -161,6 +145,8 @@
                   v-model="form.deliveryStartDate"
                   label="Delivery Start Date"
                   prepend-icon="event"
+                  :rules="startDateRules"
+                  required
                   readonly
                   dense
                   outlined
@@ -198,6 +184,8 @@
                   v-model="form.deliveryEndDate"
                   label="Delivery End Date"
                   prepend-icon="event"
+                  :rules="endDateRules"
+                  required
                   readonly
                   dense
                   outlined
@@ -224,6 +212,8 @@
               :items="pipelinesList"
               :loading="pipelineLoading"
               :disabled="pipelinesList.length === 0"
+              :rules="pipelineRules"
+              required
               outlined
               dense
               label="Pipeline"
@@ -235,6 +225,8 @@
               :items="zonesList"
               :loading="zonesLoading"
               :disabled="zonesList.length === 0"
+              :rules="zonesRules"
+              required
               label="Zones"
               outlined
               dense
@@ -248,6 +240,8 @@
               :items="locationsList"
               :loading="locationLoading"
               :disabled="locationsList.length === 0"
+              :rules="locationRules"
+              required
               label="Location"
               outlined
               dense
@@ -255,9 +249,11 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-autocomplete
-              v-model="form.price"
-              :items="pricesList"
-              label="Price"
+              v-model="form.unitOfMeasure"
+              label="Unit of Measure"
+              :items="unitsList"
+              :rules="unitsRules"
+              required
               outlined
               dense
             ></v-autocomplete>
@@ -291,6 +287,7 @@
               v-model="form.deal"
               :items="dealsList"
               label="Deal"
+              required
               outlined
               dense
             ></v-select>
@@ -302,6 +299,56 @@
               outlined
               dense
             ></v-textarea>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <fieldset>
+              <legend>Price details</legend>
+              <v-radio-group
+                v-model="form.priceType"
+                :rules="priceTypeRules"
+                required
+                dense
+                row
+              >
+                <v-radio label="Float" value="float" dense></v-radio>
+                <v-radio label="Fixed" value="fixed" dense></v-radio>
+              </v-radio-group>
+              <v-autocomplete
+                v-if="form.priceType === 'fixed'"
+                v-model="form.priceBasis"
+                :items="priceBasisList"
+                :rules="priceBasisRules"
+                required
+                label="Price Basis"
+                outlined
+                dense
+              ></v-autocomplete>
+              <v-text-field
+                v-if="form.priceType === 'float'"
+                v-model="form.priceBasis"
+                :rules="priceBasisRules"
+                required
+                outlined
+                dense
+                min="0"
+                type="number"
+                label="Price Basis"
+                hint="Specify the spread"
+              ></v-text-field>
+              <v-text-field
+                v-model="form.spread"
+                :rules="spreadRules"
+                required
+                outlined
+                dense
+                min="0"
+                type="number"
+                label="Spread"
+                hint="Specify the spread"
+              ></v-text-field>
+            </fieldset>
           </v-col>
         </v-row>
         <hr />
@@ -331,12 +378,12 @@ export default {
   data: () => ({
     form: {
       executionDate: "",
-      time: null,
       trader: "",
       book: "",
       tradeType: "",
       counterparty: "",
-      price: "",
+      priceType: "float",
+      spread: "",
       product: "",
       quantity: "",
       deliveryStartDate: "",
@@ -347,7 +394,8 @@ export default {
       broker: "",
       commision: "",
       zone: "",
-      deal: "Firm"
+      deal: "Firm",
+      unitOfMeasure: "mmcf"
     },
     dealsList: ["Firm", "Interruptable"],
     booksList: [],
@@ -374,8 +422,48 @@ export default {
     snackbar: "",
     snackBarText: "",
     snackColor: "blue",
-    timeModal: false,
-    valid: false
+    valid: false,
+    unitsList: ["mmcf", "Bcf", "Tcf"],
+    priceBasisList: ["Price Basis 1", "Price Basis 2"],
+    dateRules: [
+      v => (v && v.length > 0) || "You must specify the execution date"
+    ],
+    traderRules: [v => (v && v.length > 0) || "You must specify the trader"],
+    bookRules: [v => (v && v.length > 0) || "You must specify the book"],
+    tradeTypeRules: [
+      v => (v && v.length > 0) || "You must specify the trade type"
+    ],
+    counterpartyRules: [
+      v => (v && v.length > 0) || "You must specify the counter party"
+    ],
+    productRules: [v => (v && v.length > 0) || "You must specify the product"],
+    quantityRules: [
+      v => (v && v.length > 0) || "You must specify the quantity"
+    ],
+    startDateRules: [
+      v => (v && v.length > 0) || "You must specify the delivery start date"
+    ],
+    endDateRules: [
+      v => (v && v.length > 0) || "You must specify the delivery end date"
+    ],
+    pipelineRules: [
+      v => (v && v.length > 0) || "You must specify the pipeline"
+    ],
+    zonesRules: [v => (v && v.length > 0) || "You must specify the zone"],
+    locationRules: [
+      v => (v && v.length > 0) || "You must specify the location"
+    ],
+    priceRules: [v => (v && v.length > 0) || "You must specify the price"],
+    unitsRules: [
+      v => (v && v.length > 0) || "You must specify the units of measure"
+    ],
+    priceTypeRules: [
+      v => (v && v.length > 0) || "You must specify the price type"
+    ],
+    priceBasisRules: [
+      v => (v && v.length > 0) || "You must specify the price basis"
+    ],
+    spreadRules: [v => (v && v.length > 0) || "You must specify the spread"]
   }),
   async created() {
     await this.axios
