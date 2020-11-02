@@ -40,10 +40,6 @@
               </v-date-picker>
             </v-dialog>
           </v-col>
-          <v-col cols="12" md="6"> </v-col>
-        </v-row>
-        <!-- Date & Time pickers -->
-        <v-row>
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.trader"
@@ -56,6 +52,9 @@
               outlined
             ></v-autocomplete>
           </v-col>
+        </v-row>
+        <!-- Execution Date & Trader -->
+        <v-row>
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.book"
@@ -69,9 +68,6 @@
               outlined
             ></v-autocomplete>
           </v-col>
-        </v-row>
-        <!-- trader & book -->
-        <v-row>
           <v-col cols="12" md="6">
             <fieldset>
               <legend>Trade type</legend>
@@ -87,6 +83,9 @@
               </v-radio-group>
             </fieldset>
           </v-col>
+        </v-row>
+        <!-- book & trade type  -->
+        <v-row>
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.counterparty"
@@ -100,9 +99,6 @@
               outlined
             ></v-autocomplete>
           </v-col>
-        </v-row>
-        <!-- trade type & counterparty -->
-        <v-row>
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.product"
@@ -115,6 +111,9 @@
               outlined
             ></v-autocomplete>
           </v-col>
+        </v-row>
+        <!-- product & counterparty -->
+        <v-row>
           <v-col cols="12" md="6">
             <v-text-field
               label="Quantity"
@@ -128,7 +127,18 @@
               outlined
             ></v-text-field>
           </v-col>
-        </v-row>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              v-model="form.unitOfMeasure"
+              label="Unit of Measure"
+              :items="unitsList"
+              :rules="unitsRules"
+              required
+              outlined
+              dense
+            ></v-autocomplete>
+          </v-col> </v-row
+        ><!-- Quantity & Unit of Measure -->
         <v-row>
           <v-col cols="12" md="6">
             <v-dialog
@@ -203,105 +213,47 @@
                 <v-btn text color="primary" @click="deliveryEnd">OK</v-btn>
               </v-date-picker>
             </v-dialog>
-          </v-col>
-        </v-row>
+          </v-col> </v-row
+        ><!-- delivery start & delivery end -->
         <v-row>
           <v-col cols="12" md="6">
-            <v-autocomplete
-              v-model="form.pipeline"
-              :items="pipelinesList"
-              :loading="pipelineLoading"
-              :disabled="pipelinesList.length === 0"
-              :rules="pipelineRules"
-              required
-              outlined
-              dense
-              label="Pipeline"
-            ></v-autocomplete>
+            <fieldset>
+              <legend>NG information</legend>
+              <v-autocomplete
+                v-model="form.pipeline"
+                :items="pipelinesList"
+                :loading="pipelineLoading"
+                :disabled="pipelinesList.length === 0"
+                :rules="pipelineRules"
+                required
+                outlined
+                dense
+                label="Pipeline"
+              ></v-autocomplete>
+              <v-autocomplete
+                v-model="form.zone"
+                :items="zonesList"
+                :loading="zonesLoading"
+                :disabled="zonesList.length === 0"
+                :rules="zonesRules"
+                required
+                label="Zones"
+                outlined
+                dense
+              ></v-autocomplete>
+              <v-autocomplete
+                v-model="form.location"
+                :items="locationsList"
+                :loading="locationLoading"
+                :disabled="locationsList.length === 0"
+                :rules="locationRules"
+                required
+                label="Location"
+                outlined
+                dense
+              ></v-autocomplete>
+            </fieldset>
           </v-col>
-          <v-col cols="12" md="6">
-            <v-autocomplete
-              v-model="form.zone"
-              :items="zonesList"
-              :loading="zonesLoading"
-              :disabled="zonesList.length === 0"
-              :rules="zonesRules"
-              required
-              label="Zones"
-              outlined
-              dense
-            ></v-autocomplete>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-autocomplete
-              v-model="form.location"
-              :items="locationsList"
-              :loading="locationLoading"
-              :disabled="locationsList.length === 0"
-              :rules="locationRules"
-              required
-              label="Location"
-              outlined
-              dense
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-autocomplete
-              v-model="form.unitOfMeasure"
-              label="Unit of Measure"
-              :items="unitsList"
-              :rules="unitsRules"
-              required
-              outlined
-              dense
-            ></v-autocomplete>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-autocomplete
-              v-model="form.broker"
-              :items="brokersList"
-              label="Broker"
-              dense
-              outlined
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field
-              v-model="form.commision"
-              outlined
-              dense
-              min="0"
-              type="number"
-              label="Commision Rate"
-              hint="Specify the amount"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-select
-              v-model="form.deal"
-              :items="dealsList"
-              label="Deal"
-              required
-              outlined
-              dense
-            ></v-select>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-textarea
-              v-model="form.comments"
-              label="Comments"
-              outlined
-              dense
-            ></v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
           <v-col cols="12" md="6">
             <fieldset>
               <legend>Price details</legend>
@@ -349,6 +301,48 @@
                 hint="Specify the spread"
               ></v-text-field>
             </fieldset>
+          </v-col> </v-row
+        ><!-- Price Details & NG information -->
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-autocomplete
+              v-model="form.broker"
+              :items="brokersList"
+              label="Broker"
+              dense
+              outlined
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="form.commision"
+              outlined
+              dense
+              min="0"
+              type="number"
+              label="Commision Rate"
+              hint="Specify the amount"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-select
+              v-model="form.deal"
+              :items="dealsList"
+              label="Deal"
+              required
+              outlined
+              dense
+            ></v-select>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-textarea
+              v-model="form.comments"
+              label="Comments"
+              outlined
+              dense
+            ></v-textarea>
           </v-col>
         </v-row>
         <hr />
@@ -395,7 +389,7 @@ export default {
       commision: "",
       zone: "",
       deal: "Firm",
-      unitOfMeasure: "mmcf"
+      unitOfMeasure: "Mmbtu"
     },
     dealsList: ["Firm", "Interruptable"],
     booksList: [],
@@ -423,7 +417,7 @@ export default {
     snackBarText: "",
     snackColor: "blue",
     valid: false,
-    unitsList: ["mmcf", "Bcf", "Tcf"],
+    unitsList: ["Mmbtu", "GJ"],
     priceBasisList: ["Price Basis 1", "Price Basis 2"],
     dateRules: [
       v => (v && v.length > 0) || "You must specify the execution date"
@@ -567,10 +561,11 @@ fieldset {
   border-radius: 5px;
   border: solid 1px rgb(180, 180, 180);
   outline-width: 0;
+  padding: 0 15px;
 }
 fieldset legend {
   font-size: 12px;
   padding: 0 3px;
-  margin-left: 10px;
+  margin-left: -3px;
 }
 </style>
